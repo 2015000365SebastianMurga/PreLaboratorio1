@@ -1,0 +1,130 @@
+SQL código de Sebastian Murga Ovalle, V B #18
+
+CREATE DATABASE VB18fixopeliculas;
+use VB18fixopeliculas;
+
+CREATE TABLE categoriaVB (
+    id_categoria INT PRIMARY KEY,
+    nombre VARCHAR(100)
+);
+INSERT INTO categoriaVB(id_categoria,nombre) VALUES
+(1,"Romántica"),
+(2,"Ciencia Ficcion"),
+(3,"Acción"),
+(4,"Suspenso"),
+(5,"Terror");
+SELECT * FROM categoriaVB ORDER BY nombre ASC;
+
+CREATE TABLE directoresVB(
+	id_directores INT PRIMARY KEY,
+    nombre VARCHAR(100),
+    edad INT,
+    mejor_peli VARCHAR(100),
+    id_categoria_fk INT(50),
+    foreign key (id_categoria_fk) REFERENCES categoriaVB(id_categoria)
+);
+INSERT INTO directoresVB(id_directores, nombre, edad, mejor_peli, id_categoria_fk)VALUES
+(1,"Nora Ephron",71,"Yo antes de Ti",1),
+(2,"Denis Villeneuve",57 ,"Blade Runner 2049",2),
+(3,"John Woo",78,"Hard Boiled",3),
+(4,"Alfred Hitchcock",80,"Psycho",4),
+(5,"Ari Aster",40,"Hereditary",5)
+;
+SELECT*FROM directoresVB order by edad desc;
+
+CREATE TABLE peliculasVB(
+    id_peliculas INT PRIMARY KEY,
+    nombre VARCHAR(100),
+    año INT,
+    duracion INT,
+    descripcion TEXT,
+    id_categoria_fk int(50),
+    FOREIGN KEY (id_categoria_fk) REFERENCES categoriaVB(id_categoria)
+);
+INSERT INTO peliculasVB(id_peliculas, nombre, año, duracion, descripcion, id_categoria_fk) VALUES
+(1,"Cuando Harry conoció a Juliana","1989","96","Drama Romántico","1"),
+(2,"Pokemon1","2000","84","Aventuras y Criaturas","2"),
+(3,"Terminator 2","1991","127","Robots Destructores","3"),
+(4,"Seven","1995","121","Suspenso de detectives","4"),
+(5,"El Exorcista","1973","134","Terror demoniaco","5");
+SELECT * FROM peliculasVB ORDER BY año DESC;
+DELETE FROM peliculasVB WHERE nombre='Pokemon1';
+
+CREATE TABLE inventarioVB(
+    id_inventario INT PRIMARY KEY,
+    disponible TINYINT(1),
+    id_pelicula_fk INT(50),
+    foreign key (id_pelicula_fk) REFERENCES peliculasVB(id_peliculas)
+);
+INSERT INTO inventarioVB(id_inventario,disponible,id_pelicula_fk) VALUES
+(1,6,1),
+(2,8,1),
+(3,1,3),
+(4,9,4),
+(5,7,5);
+SELECT *FROM inventarioVB;
+ 
+CREATE TABLE direccionVB(
+	id_direccion INT PRIMARY KEY,
+    direccion VARCHAR(100),
+    ciudad VARCHAR(100),
+    pais VARCHAR(100)
+);
+INSERT INTO direccionVB(id_direccion, direccion, ciudad, pais) VALUES
+(1,"Avenida Reforma","Ciudad de Guatemala","Guatemala"),
+(2,"Chicken Avenue","Indiana","USA"),
+(3,"Radiagummy Avenit","Berlin","Alemania"),
+(4,"Avenida Rivadavia","Buenos Aires","Argentina"),
+(5,"Wangfujing","Pekín","China");
+SELECT*FROM direccionVB;
+
+CREATE TABLE clienteVB (
+    id_cliente INT PRIMARY KEY,
+    nombre VARCHAR(100),
+    apellido VARCHAR(100),
+    edad INT,
+    id_direccion_fk int(50),
+    FOREIGN KEY (id_direccion_fk) REFERENCES direccionVB(id_direccion)
+);
+INSERT INTO clienteVB(id_cliente, nombre, apellido, edad, id_direccion_fk) VALUES
+(1,"Jose","Cruz","96","1"),
+(2,"Juliana","Monterroso","22","2"),
+(3,"Angel","Jesus","18","3"),
+(4,"Migual","Flores","64","4"),
+(5,"Victor","Hugo","55","5");
+SELECT*FROM clienteVB;
+SELECT*FROM clienteVB WHERE nombre='Juliana';
+
+CREATE TABLE historialVB(
+	id_historial INT PRIMARY KEY,
+    id_cliente_fk INT(50),
+    FOREIGN KEY (id_cliente_fk) REFERENCES clienteVB(id_cliente),
+    id_pelicula_fk INT(50),
+    foreign key (id_pelicula_fk) REFERENCES peliculasVB(id_peliculas),
+    veces_rentada INT,
+    costo INT
+);
+INSERT INTO historialVB (id_historial,id_cliente_fk,id_pelicula_fk,veces_rentada,costo)VALUES
+(1,1,1,3,45),
+(2,2,1,17,50),
+(3,3,3,1,55),
+(4,4,4,111,30),
+(5,5,5,99,38);
+select*from historialVB ORDER BY costo desc;
+
+CREATE TABLE rentaVB(
+    id_renta INT PRIMARY KEY,
+    fecha_renta DATE,
+    fecha_entrega DATE,
+    id_inventario_fk int(50),
+    FOREIGN KEY (id_inventario_fk) REFERENCES inventarioVB(id_inventario),
+    id_cliente_fk INT(50),
+    FOREIGN KEY (id_cliente_fk) REFERENCES clienteVB(id_cliente)
+);
+INSERT INTO rentaVB(id_renta, fecha_renta, fecha_entrega, id_inventario_fk, id_cliente_fk) VALUES
+(1,"2024-12-25","2024-12-31","1","1"),
+(2,"2025-1-12","2025-1-30","2","2"),
+(3,"2025-1-27","2025-2-11","3","3"),
+(4,"2023-12-31","2024-2-3","4","4"),
+(5,"2023-12-31","2024-2-3","5","5");
+SELECT*FROM rentaVB;
